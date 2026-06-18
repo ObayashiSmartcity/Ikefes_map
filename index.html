@@ -1,1 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>スポットマップ</title>
 
+<!-- Leaflet CSS -->
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; font-family: "Helvetica Neue", "Hiragino Sans", "Yu Gothic", sans-serif; }
+  #app { display:flex; flex-direction:column; height:100vh; }
+
+  /* ヘッダー */
+  header {
+    background:#1f2a44; color:#fff; padding:10px 14px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:0 2px 4px rgba(0,0,0,.15); z-index:1100;
+  }
+  header h1 { font-size:16px; margin:0; flex:1; }
+  header button {
+    background:#3b82f6; color:#fff; border:none; padding:8px 12px;
+    border-radius:6px; font-size:13px; cursor:pointer;
+  }
+  header button:hover { background:#2563eb; }
+  #toggleFilter { background:#475569; }
+
+  /* フィルタパネル */
+  #filter {
+    background:#fff; border-bottom:1px solid #ddd;
+    padding:10px 14px; max-height:40vh; overflow-y:auto;
+    display:none;
+  }
+  #filter.open { display:block; }
+  #filter .actions { margin-bottom:8px; display:flex; gap:8px; flex-wrap:wrap; }
+  #filter .actions button {
+    background:#e2e8f0; border:none; padding:6px 10px;
+    border-radius:5px; font-size:12px; cursor:pointer;
+  }
+  .cat-list {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:6px;
+  }
+  .cat-item {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 8px; border:1px solid #e2e8f0; border-radius:6px;
+    font-size:13px; cursor:pointer; user-select:none;
+  }
+  .cat-item input { margin:0; }
+  .cat-color {
+    width:14px; height:14px; border-radius:50%;
+    border:1px solid rgba(0,0,0,.2); flex-shrink:0;
+  }
+  .cat-count { color:#64748b; font-size:11px; margin-left:auto; }
+
+  /* マップ */
+  #map { flex:1; width:100%; }
+
+  /* カスタムマーカー */
+  .poi-marker {
+    width:26px; height:26px; border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg); border:2px solid #fff;
+    box-shadow:0 2px 4px rgba(0,0,0,.3);
+  }
+  .poi-marker::after {
+    content:""; display:block; width:8px; height:8px;
+    background:#fff; border-radius:50%;
+    margin:7px auto; transform:rotate(45deg);
+  }
+  /* 現在地マーカー */
+  .me-marker {
+    width:18px; height:18px; border-radius:50%;
+    background:#2563eb; border:3px solid #fff;
+    box-shadow:0 0 0 4px rgba(37,99,235,.3);
+  }
+
+  /* ポップアップ内容 */
+  .popup-thumb {
+    width:100%; max-width:240px; height:140px; object-fit:cover;
+    border-radius:6px; margin-bottom:6px; background:#f1f5f9;
+  }
+  .popup-title { font-weight:bold; font-size:14px; margin:4px 0; }
+  .popup-cat {
+    display:inline-block; padding:2px 8px; font-size:11px;
+    border-radius:10px; color:#111; margin-bottom:6px;
+  }
+  .popup-desc { font-size:12px; color:#334155; line-height:1.5; max-height:120px; overflow-y:auto; }
+  .popup-link {
+    display:inline-block; margin-top:6px; padding:6px 10px;
+    background:#3b82f6; color:#fff !important; text-decoration:none;
+    border-radius:5px; font-size:12px;
+  }
+
+  /* スマホ最適化 */
+  @media (max-width:600px){
+    header h1 { font-size:14px; }
+    header button { padding:6px 10px; font-size:12px; }
+    .cat-list { grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ローディング */
+  #loading {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    background:rgba(255,255,255,.9); padding:14px 22px; border-radius:8px;
+    z-index:2000; box-shadow:0 2px 8px rgba(0,0,0,.2); font-size:14px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🗺️ スポットマップ</h1>
+    <button id="locateBtn" title="現在地を表示">📍 現在地</button>
+    <button id="toggleFilter">🔍 カテゴリ</button>
+  </header>
+
+  <div id="filter">
+    <div class="actions">
+      <button id="selectAll">すべて選択</button>
+      <button id="clearAll">すべて解除</button>
+      <span style="font-size:12px; color:#64748b; align-self:center;">
+        表示中: <span id="visibleCount">0</span> / <span id="totalCount">0</span> 件
+      </span>
+    </div>
+    <div class="cat-list" id="catList"></div>
+  </div>
+
+  <div id="map"></div>
+  <div id="loading">読み込み中...</div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+<script>
+(() => {
+  // ===== 初期化 =====
+  const map = L.map('map', { zoomControl: true }).setView([34.6937, 135.5023], 14); // 大阪市役所付近
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // 状態
+  const state = {
+    categories: [],         // [{category_id, category_name, color_code}]
+    pois: [],               // 全POI
+    markers: new Map(),     // event_id -> L.marker
+    activeCategoryIds: new Set(),
+    meMarker: null,
+    meCircle: null,
+  };
+
+  // ===== カスタムアイコン作成 =====
+  function makeIcon(color) {
+    return L.divIcon({
+      className: '',
+      html: `<div class="poi-marker" style="background:${color}"></div>`,
+      iconSize: [26, 26],
+      iconAnchor: [13, 26],
+      popupAnchor: [0, -24],
+    });
+  }
+
+  // ===== ポップアップHTML =====
+  function popupHtml(poi) {
+    const cat = poi.category || {};
+    const thumb = poi.thumbnail_url
+      ? `<img class="popup-thumb" src="${poi.thumbnail_url}" onerror="this.style.display='none'">`
+      : '';
+    const link = poi.detail_url
+      ? `<a class="popup-link" href="${poi.detail_url}" target="_blank" rel="noopener">詳細を見る →</a>`
+      : '';
+    const desc = (poi.description || '').replace(/<br\s*\/?>/gi, '<br>');
+    return `
+      <div style="min-width:220px;max-width:260px;">
+        ${thumb}
+        <div class="popup-cat" style="background:${cat.color_code || '#ccc'}">${cat.category_name || ''}</div>
+        <div class="popup-title">${poi.event_name || ''}</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;">${poi.spot?.address || poi.spot?.spot_name || ''}</div>
+        <div class="popup-desc">${desc}</div>
+        ${link}
+      </div>`;
+  }
+
+  // ===== カテゴリリスト描画 =====
+  function renderCategoryList() {
+    const el = document.getElementById('catList');
+    const counts = {};
+    state.pois.forEach(p => {
+      const id = p.category?.category_id;
+      if (id) counts[id] = (counts[id] || 0) + 1;
+    });
+
+    el.innerHTML = state.categories.map(c => `
+      <label class="cat-item">
+        <input type="checkbox" data-id="${c.category_id}" checked>
+        <span class="cat-color" style="background:${c.color_code}"></span>
+        <span>${c.category_name}</span>
+        <span class="cat-count">${counts[c.category_id] || 0}</span>
+      </label>
+    `).join('');
+
+    el.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const id = cb.dataset.id;
+        if (cb.checked) state.activeCategoryIds.add(id);
+        else state.activeCategoryIds.delete(id);
+        applyFilter();
+      });
+    });
+
+    document.getElementById('totalCount').textContent = state.pois.length;
+  }
+
+  // ===== マーカー描画 =====
+  function renderMarkers() {
+    state.pois.forEach(poi => {
+      const lat = poi.spot?.latitude, lng = poi.spot?.longitude;
+      if (typeof lat !== 'number' || typeof lng !== 'number') return;
+      const color = poi.category?.color_code || '#888';
+      const m = L.marker([lat, lng], { icon: makeIcon(color) })
+        .bindPopup(popupHtml(poi), { maxWidth: 280 });
+      state.markers.set(poi.event_id, { marker: m, poi });
+    });
+    applyFilter();
+  }
+
+  // ===== フィルタ適用 =====
+  function applyFilter() {
+    let visible = 0;
+    state.markers.forEach(({ marker, poi }) => {
+      const catId = poi.category?.category_id;
+      if (state.activeCategoryIds.has(catId)) {
+        marker.addTo(map);
+        visible++;
+      } else {
+        map.removeLayer(marker);
+      }
+    });
+    document.getElementById('visibleCount').textContent = visible;
+  }
+
+  // ===== 現在地表示 =====
+  function locate() {
+    if (!navigator.geolocation) {
+      alert('このブラウザは位置情報に対応していません。');
+      return;
+    }
+    const btn = document.getElementById('locateBtn');
+    btn.textContent = '📍 取得中...';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        const latlng = [latitude, longitude];
+
+        if (state.meMarker) map.removeLayer(state.meMarker);
+        if (state.meCircle) map.removeLayer(state.meCircle);
+
+        state.meMarker = L.marker(latlng, {
+          icon: L.divIcon({
+            className: '',
+            html: '<div class="me-marker"></div>',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9],
+          })
+        }).addTo(map).bindPopup('現在地').openPopup();
+
+        state.meCircle = L.circle(latlng, {
+          radius: accuracy,
+          color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.1, weight: 1
+        }).addTo(map);
+
+        map.setView(latlng, 16);
+        btn.textContent = '📍 現在地';
+      },
+      err => {
+        alert('位置情報の取得に失敗しました: ' + err.message);
+        btn.textContent = '📍 現在地';
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  }
+
+  // ===== イベント =====
+  document.getElementById('locateBtn').addEventListener('click', locate);
+  document.getElementById('toggleFilter').addEventListener('click', () => {
+    document.getElementById('filter').classList.toggle('open');
+    setTimeout(() => map.invalidateSize(), 200);
+  });
+  document.getElementById('selectAll').addEventListener('click', () => {
+    document.querySelectorAll('#catList input').forEach(cb => {
+      cb.checked = true; state.activeCategoryIds.add(cb.dataset.id);
+    });
+    applyFilter();
+  });
+  document.getElementById('clearAll').addEventListener('click', () => {
+    document.querySelectorAll('#catList input').forEach(cb => {
+      cb.checked = false;
+    });
+    state.activeCategoryIds.clear();
+    applyFilter();
+  });
+
+  // ===== JSON 読み込み =====
+  fetch('pois.json')
+    .then(r => {
+      if (!r.ok) throw new Error('pois.json が読み込めません (' + r.status + ')');
+      return r.json();
+    })
+    .then(data => {
+      state.categories = data.categories || [];
+      state.pois = (data.pois || []).filter(p =>
+        p.spot && typeof p.spot.latitude === 'number' && typeof p.spot.longitude === 'number'
+      );
+      state.categories.forEach(c => state.activeCategoryIds.add(c.category_id));
+
+      renderCategoryList();
+      renderMarkers();
+
+      // 全POIが見える範囲にフィット
+      const bounds = L.latLngBounds(state.pois.map(p => [p.spot.latitude, p.spot.longitude]));
+      if (bounds.isValid()) map.fitBounds(bounds, { padding: [30, 30] });
+
+      document.getElementById('loading').style.display = 'none';
+    })
+    .catch(err => {
+      document.getElementById('loading').textContent = 'エラー: ' + err.message;
+      console.error(err);
+    });
+})();
+</script>
+</body>
+</html>
