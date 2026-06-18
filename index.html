@@ -23,8 +23,6 @@
     --line-2:#f0f0f0;
     --hover:#f5f5f5;
     --shadow:0 8px 30px rgba(0,0,0,.10);
-    --pin-bg:#ffffff;
-    --pin-stroke:#0a0a0a;
     --me-dot:#0a0a0a;
     --me-halo:rgba(10,10,10,.10);
     --serif:"Cormorant Garamond", "Hiragino Mincho ProN", "Yu Mincho", serif;
@@ -43,8 +41,6 @@
     --line-2:#1c1c1e;
     --hover:#1c1c1e;
     --shadow:0 8px 30px rgba(0,0,0,.6);
-    --pin-bg:#1c1c1e;
-    --pin-stroke:#f5f5f5;
     --me-dot:#ffffff;
     --me-halo:rgba(255,255,255,.18);
   }
@@ -194,7 +190,7 @@
     display:flex; align-items:center; justify-content:center;
   }
   .poi-marker svg{width:100%; height:100%; display:block; overflow:visible;
-    filter:drop-shadow(0 2px 3px rgba(0,0,0,.18));}
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
   .me-marker{
     width:16px; height:16px; border-radius:50%;
     background:var(--me-dot); border:2.5px solid var(--bg);
@@ -355,7 +351,7 @@
   <header>
     <div class="brand">
       <svg class="mark"><use href="#i-logo"/></svg>
-      <h1>Open House Osaka 2026</h1>
+      <h1>OPEN HOUSE OSAKA 2026</h1>
       <span class="sub">生きた建築ミュージアムフェスティバル大阪2025</span>
     </div>
     <button class="icon-btn" id="themeBtn" title="表示切替" aria-label="テーマ切替">
@@ -411,7 +407,8 @@
   function getInitialTheme(){
     const saved = localStorage.getItem(THEME_KEY);
     if (saved) return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // デフォルトを白ベース（light）に固定
+    return 'light';
   }
   let currentTheme = getInitialTheme();
 
@@ -454,10 +451,11 @@
     showToast._tid = setTimeout(()=>t.classList.remove('show'), ms);
   }
 
+  // ピン自体をカテゴリの色にし、枠線を排除
   function pinSvg(color){
     return '<svg viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="M15 1.5 C 22.5 1.5 27.5 7 27.5 14 C 27.5 22.5 15 36 15 36 C 15 36 2.5 22.5 2.5 14 C 2.5 7 7.5 1.5 15 1.5 Z" fill="var(--pin-bg)" stroke="var(--pin-stroke)" stroke-width="1.2"/>' +
-      '<circle cx="15" cy="14" r="5.5" fill="' + color + '" stroke="var(--pin-stroke)" stroke-width="0.8"/>' +
+      '<path d="M15 1.5 C 22.5 1.5 27.5 7 27.5 14 C 27.5 22.5 15 36 15 36 C 15 36 2.5 22.5 2.5 14 C 2.5 7 7.5 1.5 15 1.5 Z" fill="' + color + '"/>' +
+      '<circle cx="15" cy="14" r="4.5" fill="var(--bg)"/>' +
       '</svg>';
   }
   function makeIcon(color){
@@ -631,12 +629,15 @@
     applyFilter();
   });
 
+  // OS設定変更時の自動追従リスナーを無効化（デフォルト白固定のため）
+  /*
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e=>{
     if (!localStorage.getItem(THEME_KEY)){
       currentTheme = e.matches ? 'dark' : 'light';
       applyTheme(currentTheme);
     }
   });
+  */
 
   fetch('pois.json')
     .then(r=>{ if(!r.ok) throw new Error('pois.json 読み込みエラー ('+r.status+')'); return r.json(); })
