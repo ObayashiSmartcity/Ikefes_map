@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#ffffff" id="themeColorMeta">
 <title>ARCHITECTURE MAP</title>
 
-https://unpkg.com/leaflet@1.9.4/dist/leaflet.css
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 
-https://fonts.googleapis.com
-https://fonts.gstatic.com
-https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
   :root{
@@ -58,13 +58,11 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   }
   button{font-family:inherit; color:inherit;}
 
-  /* ====== レイアウト ====== */
   #app{
     display:grid; grid-template-rows:auto 1fr; height:100dvh;
     position:relative; padding-top:var(--safe-top);
   }
 
-  /* ====== ヘッダー ====== */
   header{
     background:var(--bg);
     border-bottom:1px solid var(--line);
@@ -73,9 +71,7 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
     z-index:1100;
   }
   .brand{display:flex; align-items:baseline; gap:9px; flex:1; min-width:0;}
-  .brand .mark{
-    width:20px; height:20px; flex-shrink:0; color:var(--ink);
-  }
+  .brand .mark{ width:20px; height:20px; flex-shrink:0; color:var(--ink); }
   .brand h1{
     font-family:var(--serif); font-weight:500;
     font-size:19px; letter-spacing:.04em; margin:0;
@@ -106,7 +102,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   .icon-btn.loading svg{animation:spin 1s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  /* ====== サイドパネル ====== */
   #panel{
     position:absolute; left:0; right:auto; bottom:0;
     top:calc(61px + var(--safe-top));
@@ -165,15 +160,12 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
     border:1px solid rgba(125,125,125,.4);
   }
   .cat-name{flex:1; letter-spacing:.02em;}
-  .cat-num{
-    font-family:var(--mono); font-size:11px; color:var(--ink-3);
-  }
+  .cat-num{ font-family:var(--mono); font-size:11px; color:var(--ink-3); }
   .cat-item.off .cat-name, .cat-item.off .cat-num{opacity:.4;}
   .cat-item.off .cat-swatch{opacity:.3;}
 
   .about{font-size:11px; color:var(--ink-3); line-height:1.75;}
 
-  /* ====== マップ ====== */
   #map{width:100%; height:100%; background:var(--bg-2);}
   .leaflet-container{font-family:var(--sans); background:var(--bg-2) !important;}
   .leaflet-control-zoom{
@@ -197,7 +189,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   }
   .leaflet-control-attribution a{color:var(--ink-2) !important;}
 
-  /* ====== マーカー ====== */
   .poi-marker{
     width:30px; height:38px; position:relative;
     display:flex; align-items:center; justify-content:center;
@@ -219,7 +210,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
     100%{transform:scale(1.6); opacity:0;}
   }
 
-  /* ====== ポップアップ ====== */
   .leaflet-popup-content-wrapper{
     border-radius:0 !important; box-shadow:var(--shadow) !important;
     border:1px solid var(--line);
@@ -268,7 +258,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   .pop-link:hover{opacity:.85;}
   .pop-link svg{width:11px; height:11px;}
 
-  /* ====== トースト ====== */
   #toast{
     position:absolute; left:50%; bottom:calc(28px + var(--safe-bottom));
     transform:translateX(-50%) translateY(20px);
@@ -281,7 +270,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   }
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  /* ====== ローディング ====== */
   #loading{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     background:var(--bg); border:1px solid var(--line);
@@ -290,7 +278,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
     text-transform:uppercase; color:var(--ink-2);
   }
 
-  /* オーバーレイ */
   #overlay{
     position:absolute; inset:calc(61px + var(--safe-top)) 0 0 0;
     background:rgba(0,0,0,.35); z-index:1040;
@@ -299,7 +286,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   }
   #overlay.show{opacity:1; pointer-events:auto;}
 
-  /* ボトムシート風コントロール(右下) */
   .map-controls{
     position:absolute; right:14px; bottom:calc(28px + var(--safe-bottom));
     display:flex; flex-direction:column; gap:8px; z-index:1000;
@@ -311,7 +297,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   }
   .map-controls .icon-btn svg{width:20px; height:20px;}
 
-  /* タッチ最適化 */
   @media (hover:none){
     .icon-btn{min-width:44px; min-height:44px;}
     .cat-item{padding:14px;}
@@ -320,7 +305,6 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
 </head>
 <body>
 
-<!-- ===== SVG スプライト ===== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-logo" viewBox="0 0 24 24">
@@ -370,15 +354,15 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
 <div id="app">
   <header>
     <div class="brand">
-      <svg class="mark">#i-logo</svg>
+      <svg class="mark"><use href="#i-logo"/></svg>
       <h1>Architecture Map</h1>
-      <span class="sub">OPEN HOUSE OSAKA 2026</span>
+      <span class="sub">建築のあるところへ</span>
     </div>
     <button class="icon-btn" id="themeBtn" title="表示切替" aria-label="テーマ切替">
-      <svg id="themeIcon">#i-moon</svg>
+      <svg id="themeIcon"><use href="#i-moon"/></svg>
     </button>
     <button class="icon-btn" id="toggleFilter" title="カテゴリ" aria-label="カテゴリ">
-      <svg>#i-menu</svg>
+      <svg><use href="#i-menu"/></svg>
     </button>
   </header>
 
@@ -406,10 +390,9 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   <div id="overlay"></div>
   <div id="map"></div>
 
-  <!-- 右下の現在地ボタン -->
   <div class="map-controls">
     <button class="icon-btn" id="locateBtn" title="現在地" aria-label="現在地">
-      <svg>#i-locate</svg>
+      <svg><use href="#i-locate"/></svg>
     </button>
   </div>
 
@@ -417,12 +400,10 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormo
   <div id="toast"></div>
 </div>
 
-https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
 (() => {
-  // ===== テーマ =====
   const THEME_KEY = 'arc-map-theme';
   const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
   const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
@@ -434,19 +415,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
   }
   let currentTheme = getInitialTheme();
 
-  function applyTheme(t){
-    document.documentElement.setAttribute('data-theme', t);
-    document.getElementById('themeIcon').innerHTML =
-      `<use href="${t === 'dark' ? '#i-sun' : '#i-moon'}"/>`;
-    document.getElementById('themeColorMeta').setAttribute(
-      'content', t === 'dark' ? '#0e0e10' : '#ffffff'
-    );
-    if (tileLayer){
-      tileLayer.setUrl(t === 'dark' ? TILE_DARK : TILE_LIGHT);
-    }
-  }
-
-  // ===== マップ初期化 =====
   const map = L.map('map', {
     zoomControl:true, attributionControl:true, preferCanvas:true,
     zoomSnap:.5,
@@ -458,9 +426,17 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a>',
   }).addTo(map);
 
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeIcon').innerHTML =
+      '<use href="' + (t === 'dark' ? '#i-sun' : '#i-moon') + '"/>';
+    document.getElementById('themeColorMeta').setAttribute(
+      'content', t === 'dark' ? '#0e0e10' : '#ffffff'
+    );
+    tileLayer.setUrl(t === 'dark' ? TILE_DARK : TILE_LIGHT);
+  }
   applyTheme(currentTheme);
 
-  // 状態
   const state = {
     categories:[], pois:[], markers:new Map(),
     active:new Set(),
@@ -468,7 +444,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     hasFitInitial:false,
   };
 
-  // ===== ユーティリティ =====
   function escapeHtml(s){
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -479,68 +454,56 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     showToast._tid = setTimeout(()=>t.classList.remove('show'), ms);
   }
 
-  // ===== SVGピン =====
   function pinSvg(color){
-    return `
-      <svg viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 1.5 C 22.5 1.5 27.5 7 27.5 14 C 27.5 22.5 15 36 15 36 C 15 36 2.5 22.5 2.5 14 C 2.5 7 7.5 1.5 15 1.5 Z"
-              fill="var(--pin-bg)" stroke="var(--pin-stroke)" stroke-width="1.2"/>
-        <circle cx="15" cy="14" r="5.5" fill="${color}" stroke="var(--pin-stroke)" stroke-width="0.8"/>
-      </svg>`;
+    return '<svg viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M15 1.5 C 22.5 1.5 27.5 7 27.5 14 C 27.5 22.5 15 36 15 36 C 15 36 2.5 22.5 2.5 14 C 2.5 7 7.5 1.5 15 1.5 Z" fill="var(--pin-bg)" stroke="var(--pin-stroke)" stroke-width="1.2"/>' +
+      '<circle cx="15" cy="14" r="5.5" fill="' + color + '" stroke="var(--pin-stroke)" stroke-width="0.8"/>' +
+      '</svg>';
   }
   function makeIcon(color){
     return L.divIcon({
       className:'',
-      html:`<div class="poi-marker">${pinSvg(color)}</div>`,
+      html:'<div class="poi-marker">' + pinSvg(color) + '</div>',
       iconSize:[30,38], iconAnchor:[15,36], popupAnchor:[0,-32],
     });
   }
 
-  // ===== ポップアップ =====
   function popupHtml(poi){
     const cat = poi.category || {};
     const color = cat.color_code || '#999';
     const thumb = poi.thumbnail_url
-      ? `<img class="pop-thumb" src="${escapeHtml(poi.thumbnail_url)}" onerror="this.style.display='none'">`
+      ? '<img class="pop-thumb" src="' + escapeHtml(poi.thumbnail_url) + '" onerror="this.style.display=\'none\'">'
       : '';
     const link = poi.detail_url
-      ? `<a class="pop-link" href="${escapeHtml(poi.detail_url)}" target="_blank" rel="noopener">
-           Read more <svg><use href="#i-arrow"/></svg>
-         </a>` : '';
+      ? '<a class="pop-link" href="' + escapeHtml(poi.detail_url) + '" target="_blank" rel="noopener">Read more <svg><use href="#i-arrow"/></svg></a>'
+      : '';
     const desc = (poi.description || '').replace(/<br\s*\/?>/gi,'<br>');
-    const addr = poi.spot?.address || poi.spot?.spot_name || '';
-    return `
-      <div class="pop">
-        ${thumb}
-        <div class="pop-body">
-          <div class="pop-cat">
-            <span class="dot" style="background:${color}"></span>
-            ${escapeHtml(cat.category_name || '')}
-          </div>
-          <h3 class="pop-title">${escapeHtml(poi.event_name || '')}</h3>
-          ${addr ? `<div class="pop-addr">${escapeHtml(addr)}</div>` : ''}
-          ${desc ? `<div class="pop-desc">${desc}</div>` : ''}
-          ${link}
-        </div>
-      </div>`;
+    const addr = (poi.spot && (poi.spot.address || poi.spot.spot_name)) || '';
+    return '<div class="pop">' + thumb +
+      '<div class="pop-body">' +
+        '<div class="pop-cat"><span class="dot" style="background:' + color + '"></span>' + escapeHtml(cat.category_name || '') + '</div>' +
+        '<h3 class="pop-title">' + escapeHtml(poi.event_name || '') + '</h3>' +
+        (addr ? '<div class="pop-addr">' + escapeHtml(addr) + '</div>' : '') +
+        (desc ? '<div class="pop-desc">' + desc + '</div>' : '') +
+        link +
+      '</div></div>';
   }
 
-  // ===== カテゴリ =====
   function renderCategories(){
     const el = document.getElementById('catList');
     const counts = {};
     state.pois.forEach(p=>{
-      const id = p.category?.category_id;
+      const id = p.category && p.category.category_id;
       if (id != null) counts[id] = (counts[id]||0) + 1;
     });
-    el.innerHTML = state.categories.map(c => `
-      <label class="cat-item" data-id="${c.category_id}">
-        <input type="checkbox" data-id="${c.category_id}" checked>
-        <span class="cat-swatch" style="background:${c.color_code}"></span>
-        <span class="cat-name">${escapeHtml(c.category_name)}</span>
-        <span class="cat-num">${String(counts[c.category_id]||0).padStart(2,'0')}</span>
-      </label>
-    `).join('');
+    el.innerHTML = state.categories.map(c =>
+      '<label class="cat-item" data-id="' + c.category_id + '">' +
+        '<input type="checkbox" data-id="' + c.category_id + '" checked>' +
+        '<span class="cat-swatch" style="background:' + c.color_code + '"></span>' +
+        '<span class="cat-name">' + escapeHtml(c.category_name) + '</span>' +
+        '<span class="cat-num">' + String(counts[c.category_id]||0).padStart(2,'0') + '</span>' +
+      '</label>'
+    ).join('');
     el.querySelectorAll('input').forEach(cb=>{
       cb.addEventListener('change', ()=>{
         const id = cb.dataset.id;
@@ -554,9 +517,10 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
 
   function renderMarkers(){
     state.pois.forEach(poi=>{
-      const lat = poi.spot?.latitude, lng = poi.spot?.longitude;
+      const lat = poi.spot && poi.spot.latitude;
+      const lng = poi.spot && poi.spot.longitude;
       if (typeof lat !== 'number' || typeof lng !== 'number') return;
-      const color = poi.category?.color_code || '#888';
+      const color = (poi.category && poi.category.color_code) || '#888';
       const m = L.marker([lat,lng], {icon:makeIcon(color)})
         .bindPopup(popupHtml(poi), {maxWidth:290, minWidth:270, closeButton:true});
       state.markers.set(poi.event_id, {marker:m, poi});
@@ -567,14 +531,13 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
   function applyFilter(){
     let v = 0;
     state.markers.forEach(({marker, poi})=>{
-      const id = String(poi.category?.category_id);
+      const id = String(poi.category && poi.category.category_id);
       if (state.active.has(id)) { marker.addTo(map); v++; }
       else map.removeLayer(marker);
     });
     document.getElementById('visibleCount').textContent = String(v).padStart(3,'0');
   }
 
-  // ===== 現在地 =====
   function setMeMarker(latlng, accuracy){
     if (state.meMarker) map.removeLayer(state.meMarker);
     if (state.meCircle) map.removeLayer(state.meCircle);
@@ -587,14 +550,16 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     }).addTo(map).bindPopup('現在地 / You are here');
     if (accuracy){
       state.meCircle = L.circle(latlng, {
-        radius:accuracy, color:'var(--me-dot)', weight:1,
-        fillColor:'var(--me-dot)', fillOpacity:.05,
+        radius:accuracy, color:'#0a0a0a', weight:1,
+        fillColor:'#0a0a0a', fillOpacity:.05,
       }).addTo(map);
     }
   }
 
-  function locate(opts={}){
-    const {silent=false, recenter=true} = opts;
+  function locate(opts){
+    opts = opts || {};
+    const silent = !!opts.silent;
+    const recenter = opts.recenter !== false;
     if (!navigator.geolocation){
       if (!silent) showToast('位置情報に非対応のブラウザです');
       return Promise.reject();
@@ -605,9 +570,9 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
 
     return new Promise((resolve, reject)=>{
       navigator.geolocation.getCurrentPosition(pos=>{
-        const {latitude, longitude, accuracy} = pos.coords;
-        const ll = [latitude, longitude];
-        setMeMarker(ll, accuracy);
+        const lat = pos.coords.latitude, lng = pos.coords.longitude, acc = pos.coords.accuracy;
+        const ll = [lat, lng];
+        setMeMarker(ll, acc);
         if (recenter){
           map.setView(ll, Math.max(map.getZoom(), 15), {animate:true});
         }
@@ -630,7 +595,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     });
   }
 
-  // ===== パネル =====
   function togglePanel(force){
     const panel = document.getElementById('panel');
     const overlay = document.getElementById('overlay');
@@ -643,7 +607,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     setTimeout(()=>map.invalidateSize(), 300);
   }
 
-  // ===== イベント =====
   document.getElementById('locateBtn').addEventListener('click', ()=>locate());
   document.getElementById('toggleFilter').addEventListener('click', ()=>togglePanel());
   document.getElementById('overlay').addEventListener('click', ()=>togglePanel(false));
@@ -668,7 +631,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     applyFilter();
   });
 
-  // OSのテーマ変更追従（ユーザーが明示選択していないとき）
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e=>{
     if (!localStorage.getItem(THEME_KEY)){
       currentTheme = e.matches ? 'dark' : 'light';
@@ -676,7 +638,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
     }
   });
 
-  // ===== JSON 読み込み → POI描画 → 現在地自動取得 =====
   fetch('pois.json')
     .then(r=>{ if(!r.ok) throw new Error('pois.json 読み込みエラー ('+r.status+')'); return r.json(); })
     .then(data=>{
@@ -688,7 +649,6 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
       renderCategories();
       renderMarkers();
 
-      // 初期表示：全POIにフィット
       const b = L.latLngBounds(state.pois.map(p=>[p.spot.latitude, p.spot.longitude]));
       if (b.isValid()){
         map.fitBounds(b, {padding:[40,40]});
@@ -696,17 +656,14 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.js20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyx
       }
       document.getElementById('loading').style.display='none';
 
-      // ===== 現在地を自動取得（POI範囲内なら現在地中心、外なら表示のみ） =====
       locate({silent:true, recenter:false}).then(ll=>{
         if (b.isValid() && b.pad(0.5).contains(ll)){
-          // POIエリア内 → 現在地を中心に
           map.setView(ll, Math.max(15, map.getZoom()), {animate:true});
         } else if (b.isValid()){
-          // POIエリア外 → 両方が入る範囲に
           const extended = b.extend(ll);
           map.fitBounds(extended, {padding:[50,50], maxZoom:14});
         }
-      }).catch(()=>{ /* 失敗してもUIはそのまま */ });
+      }).catch(()=>{});
     })
     .catch(err=>{
       document.getElementById('loading').textContent = 'Error: ' + err.message;
