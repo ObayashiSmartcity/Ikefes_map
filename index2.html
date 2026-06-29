@@ -747,8 +747,9 @@
   }
   document.getElementById('settingCancel').addEventListener('click', closeSettingModal);
   document.getElementById('settingGo').addEventListener('click', ()=>{
-    location.href = 'https://drop.machiapps.com/nakanoshima/location-permissions/';
+    window.open('setting.html', '_blank', 'noopener,noreferrer');
   });
+
   document.getElementById('settingModal').addEventListener('click', (e)=>{
     if (e.target.id === 'settingModal') closeSettingModal();
   });
